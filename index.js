@@ -4,11 +4,23 @@ const server = express();
 server.use(express.json());
 
 const users = ["usuarioA", "usuarioB", "usuarioC", "usuarioD"];
-
+//global middleware
 server.use((req, res, next) => {
+  console.time("request");
   console.log(`Method: ${req.method}; URL: ${req.url}`);
-  return next();
+
+  next();
+  console.timeEnd("request");
 });
+
+function checkUserExists(req, res, next) {
+  if (!req.body.name) {
+    return res
+      .status(400)
+      .json({ error: "User name not found on request body" });
+  }
+  return next();
+}
 
 server.get("/users", (req, res) => {
   return res.json(users);
@@ -19,13 +31,13 @@ server.get("/users/:index", (req, res) => {
   return res.json(users[index]);
 });
 
-server.post("/users", (req, res) => {
+server.post("/users", checkUserExists, (req, res) => {
   const { name } = req.body;
   users.push(name);
   return res.json(users);
 });
 
-server.put("/users/:index", (req, res) => {
+server.put("/users/:index", checkUserExists, (req, res) => {
   const { index } = req.params;
   const { name } = req.body;
 

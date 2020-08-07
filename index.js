@@ -5,6 +5,11 @@ server.use(express.json());
 
 const users = ["usuarioA", "usuarioB", "usuarioC", "usuarioD"];
 
+server.use((req, res, next) => {
+  console.log(`Method: ${req.method}; URL: ${req.url}`);
+  return next();
+});
+
 server.get("/users", (req, res) => {
   return res.json(users);
 });
@@ -56,3 +61,8 @@ server.listen(3000);
 //  });
 //
 // Request params = {"name": "Gulherme", "emai": "123@123.com"} implementa:
+//   server.post("/users", (req, res) => {
+//   const { name } = req.body;
+//   users.push(name);
+//   return res.json(users);
+//   });
